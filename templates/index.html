@@ -37,6 +37,7 @@
             color: var(--text);
             min-height: 100vh;
             padding: 28px;
+            padding-right: 380px;
         }
 
         .container {
@@ -47,6 +48,187 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             overflow: hidden;
+        }
+
+        .filter-panel {
+            position: fixed;
+            right: 28px;
+            top: 28px;
+            width: 320px;
+            max-height: calc(100vh - 56px);
+            overflow-y: auto;
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+
+        .filter-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .filter-panel::-webkit-scrollbar-track {
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 4px;
+        }
+
+        .filter-panel::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.4);
+            border-radius: 4px;
+        }
+
+        .filter-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.6);
+        }
+
+        .filter-title {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 1.3em;
+            margin-bottom: 18px;
+            letter-spacing: -0.5px;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group-title {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: rgba(148, 163, 184, 0.05);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-option:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .filter-option input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .filter-option label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 0.92em;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .filter-option .option-count {
+            font-size: 0.82em;
+            color: var(--muted);
+            margin-left: auto;
+            font-weight: 500;
+        }
+
+        .port-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .port-input-group input {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text);
+            font-size: 0.9em;
+            outline: none;
+        }
+
+        .port-input-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+        }
+
+        .port-input-group input::placeholder {
+            color: var(--muted);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .filter-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
+        }
+
+        .filter-btn.danger {
+            background: rgba(239, 68, 68, 0.12);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .filter-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #fca5a5;
+        }
+
+        @media (max-width: 1400px) {
+            body {
+                padding-right: 28px;
+            }
+
+            .filter-panel {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-right: 28px;
+            }
+
+            .filter-panel {
+                position: static;
+                width: 100%;
+                max-height: none;
+                margin-bottom: 20px;
+            }
         }
 
         .header {
@@ -476,6 +658,54 @@
     </style>
 </head>
 <body>
+    <div class="filter-panel">
+        <div class="filter-title">⚙️ Filters</div>
+
+        <div class="filter-group">
+            <div class="filter-group-title">Port State</div>
+            <div class="filter-options">
+                <div class="filter-option">
+                    <input type="checkbox" id="filter-open" checked>
+                    <label for="filter-open">Open</label>
+                    <span class="option-count" data-state="open">0</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="filter-closed" checked>
+                    <label for="filter-closed">Closed</label>
+                    <span class="option-count" data-state="closed">0</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="filter-filtered" checked>
+                    <label for="filter-filtered">Filtered</label>
+                    <span class="option-count" data-state="filtered">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <div class="filter-group-title">Exclude Ports</div>
+            <div class="port-input-group">
+                <input type="text" id="exclude-ports" placeholder="e.g. 22,23,3389" title="Comma-separated port numbers">
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <div class="filter-group-title">Include Services</div>
+            <div id="services-filter" class="filter-options"></div>
+        </div>
+
+        <div class="filter-group">
+            <div class="filter-group-title">Exclude Services</div>
+            <div class="port-input-group">
+                <input type="text" id="exclude-services" placeholder="e.g. http,ssh" title="Comma-separated service names">
+            </div>
+        </div>
+
+        <div class="filter-buttons">
+            <button class="filter-btn danger" onclick="resetFilters()">Reset Filters</button>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>🔍 Nmap Scan Results</h1>
@@ -891,6 +1121,14 @@
         const hideOfflineCheckbox = document.getElementById('hide-offline');
         const searchInput = document.getElementById('search-input');
 
+        // Filter state
+        const filterState = {
+            portStates: { open: true, closed: true, filtered: true },
+            excludePorts: [],
+            includeServices: [],
+            excludeServices: []
+        };
+
         function ipToValue(ip) {
             return ip.split('.').map(part => parseInt(part, 10) || 0);
         }
@@ -918,6 +1156,95 @@
             sorted.forEach(node => hostsList.appendChild(node));
         }
 
+        function parseExcludePorts() {
+            const input = document.getElementById('exclude-ports').value.trim();
+            return input ? input.split(',').map(p => p.trim()).filter(p => p) : [];
+        }
+
+        function parseIncludeServices() {
+            const checkboxes = Array.from(document.querySelectorAll('#services-filter input:checked'));
+            return checkboxes.map(cb => cb.dataset.service);
+        }
+
+        function parseExcludeServices() {
+            const input = document.getElementById('exclude-services').value.trim();
+            return input ? input.split(',').map(s => s.trim().toLowerCase()).filter(s => s) : [];
+        }
+
+        function shouldShowPort(port) {
+            // Check port state filter
+            const state = (port.state || 'unknown').toLowerCase();
+            if (!filterState.portStates[state]) {
+                return false;
+            }
+
+            // Check excluded ports
+            if (filterState.excludePorts.includes(port.port)) {
+                return false;
+            }
+
+            // Check included services (if any selected, only show those)
+            if (filterState.includeServices.length > 0) {
+                const serviceName = (port.service || 'unknown').toLowerCase();
+                // Check if service name matches any of the included services
+                const matches = filterState.includeServices.some(s => serviceName.includes(s) || s.includes(serviceName));
+                if (!matches) {
+                    return false;
+                }
+            }
+
+            // Check excluded services
+            const serviceName = (port.service || 'unknown').toLowerCase();
+            const isExcluded = filterState.excludeServices.some(s => serviceName.includes(s) || s.includes(serviceName));
+            if (isExcluded) {
+                return false;
+            }
+
+            return true;
+        }
+
+        function updatePortItems() {
+            hostItems.forEach(host => {
+                const portElements = Array.from(host.querySelectorAll('.port-item'));
+                let visiblePortCount = 0;
+
+                portElements.forEach(portEl => {
+                    const portText = portEl.dataset.portText;
+                    // Format: "port/protocol service product extrainfo state"
+                    const parts = portText.split(/\s+/);
+                    const portNum = parts[0].split('/')[0];
+                    
+                    // Find the state (open, closed, filtered) - it should be one of the last parts
+                    let portState = 'unknown';
+                    for (let i = parts.length - 1; i >= 1; i--) {
+                        if (['open', 'closed', 'filtered'].includes(parts[i].toLowerCase())) {
+                            portState = parts[i].toLowerCase();
+                            break;
+                        }
+                    }
+                    
+                    // Service is typically right after protocol (second part)
+                    const portService = parts[1] ? parts[1].toLowerCase() : 'unknown';
+
+                    const shouldShow = shouldShowPort({
+                        port: portNum,
+                        state: portState,
+                        service: portService
+                    });
+
+                    portEl.style.display = shouldShow ? '' : 'none';
+                    if (shouldShow) visiblePortCount++;
+                });
+
+                // Update port count
+                const portsTitle = host.querySelector('.ports-title');
+                if (portsTitle) {
+                    const originalCount = host.dataset.originalPorts || 0;
+                    portsTitle.textContent = `Ports (${visiblePortCount} of ${originalCount} visible)`;
+                }
+            });
+        }
+
         function applyFilters() {
             const hideOffline = hideOfflineCheckbox.checked;
             const query = searchInput.value.trim().toLowerCase();
@@ -929,26 +1256,128 @@
                     return;
                 }
 
+                // Check if host has any visible ports
+                const portItems = host.querySelectorAll('.port-item');
+                let hasVisiblePorts = false;
+                let matchesQuery = false;
+
+                portItems.forEach(port => {
+                    if (port.style.display !== 'none') {
+                        hasVisiblePorts = true;
+                    }
+                    if (!query || port.dataset.portText.toLowerCase().includes(query)) {
+                        matchesQuery = true;
+                    }
+                });
+
                 if (!query) {
-                    host.style.display = '';
+                    host.style.display = hasVisiblePorts ? '' : 'none';
                     return;
                 }
 
                 const hostText = `${host.dataset.ip} ${host.dataset.hostname}`.toLowerCase();
-                if (hostText.includes(query)) {
-                    host.style.display = '';
-                    return;
+                if (hostText.includes(query) || matchesQuery) {
+                    host.style.display = hasVisiblePorts ? '' : 'none';
+                } else {
+                    host.style.display = 'none';
                 }
+            });
+        }
 
-                const portItems = host.querySelectorAll('[data-port-text]');
-                let matches = false;
-                portItems.forEach(port => {
-                    if (port.dataset.portText.toLowerCase().includes(query)) {
-                        matches = true;
+        function applyAllFilters() {
+            filterState.portStates = {
+                open: document.getElementById('filter-open').checked,
+                closed: document.getElementById('filter-closed').checked,
+                filtered: document.getElementById('filter-filtered').checked
+            };
+            filterState.excludePorts = parseExcludePorts();
+            filterState.includeServices = parseIncludeServices();
+            filterState.excludeServices = parseExcludeServices();
+
+            updatePortItems();
+            applyFilters();
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-open').checked = true;
+            document.getElementById('filter-closed').checked = true;
+            document.getElementById('filter-filtered').checked = true;
+            document.getElementById('exclude-ports').value = '';
+            document.getElementById('exclude-services').value = '';
+            document.querySelectorAll('#services-filter input').forEach(cb => cb.checked = false);
+            
+            filterState.portStates = { open: true, closed: true, filtered: true };
+            filterState.excludePorts = [];
+            filterState.includeServices = [];
+            filterState.excludeServices = [];
+
+            hostItems.forEach(host => {
+                host.querySelectorAll('.port-item').forEach(port => {
+                    port.style.display = '';
+                });
+                const portsTitle = host.querySelector('.ports-title');
+                if (portsTitle) {
+                    const openCount = host.dataset.openPorts || 0;
+                    portsTitle.textContent = `Ports (${openCount} open)`;
+                }
+            });
+
+            applyFilters();
+        }
+
+        function populateServiceFilter() {
+            const services = new Set();
+            const serviceCount = {};
+
+            hostsData.forEach(host => {
+                (host.ports || []).forEach(port => {
+                    if (port.state === 'open') {
+                        const service = (port.service || 'unknown').toLowerCase();
+                        services.add(service);
+                        serviceCount[service] = (serviceCount[service] || 0) + 1;
                     }
                 });
+            });
 
-                host.style.display = matches ? '' : 'none';
+            const servicesFilter = document.getElementById('services-filter');
+            const sortedServices = Array.from(services).sort();
+
+            sortedServices.forEach(service => {
+                const div = document.createElement('div');
+                div.className = 'filter-option';
+                const id = `filter-service-${service}`;
+                div.innerHTML = `
+                    <input type="checkbox" id="${id}" data-service="${service}">
+                    <label for="${id}">${service}</label>
+                    <span class="option-count">${serviceCount[service] || 0}</span>
+                `;
+                servicesFilter.appendChild(div);
+            });
+        }
+
+        function populateStateCounts() {
+            const stateCounts = { open: 0, closed: 0, filtered: 0 };
+
+            hostsData.forEach(host => {
+                (host.ports || []).forEach(port => {
+                    const state = (port.state || 'unknown').toLowerCase();
+                    if (stateCounts.hasOwnProperty(state)) {
+                        stateCounts[state]++;
+                    }
+                });
+            });
+
+            document.querySelectorAll('.option-count[data-state]').forEach(el => {
+                const state = el.dataset.state;
+                el.textContent = stateCounts[state] || 0;
+            });
+        }
+
+        function cachePortData() {
+            hostItems.forEach(host => {
+                const openCount = host.querySelectorAll('.port-item').length;
+                host.dataset.originalPorts = openCount;
+                host.dataset.openPorts = openCount;
             });
         }
 
@@ -962,6 +1391,25 @@
         const summary = summarize(hostsData);
         updateStatCards(summary);
         renderCharts(summary);
+
+        cachePortData();
+        populateServiceFilter();
+        populateStateCounts();
+
+        // Add real-time filter listeners
+        document.getElementById('filter-open').addEventListener('change', applyAllFilters);
+        document.getElementById('filter-closed').addEventListener('change', applyAllFilters);
+        document.getElementById('filter-filtered').addEventListener('change', applyAllFilters);
+        document.getElementById('exclude-ports').addEventListener('input', applyAllFilters);
+        document.getElementById('exclude-services').addEventListener('input', applyAllFilters);
+
+        // Add listeners for service checkboxes
+        const servicesFilter = document.getElementById('services-filter');
+        servicesFilter.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                applyAllFilters();
+            }
+        });
 
         applySort();
         applyFilters();
