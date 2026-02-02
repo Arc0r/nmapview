@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nmap Scan Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b1021;
+            --panel: #0f172a;
+            --panel-2: #111827;
+            --muted: #94a3b8;
+            --text: #e2e8f0;
+            --accent: #38bdf8;
+            --accent-2: #f59e0b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --border: rgba(148, 163, 184, 0.25);
+            --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            --radius: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.12), transparent 35%),
+                        radial-gradient(circle at 80% 0%, rgba(245, 158, 11, 0.14), transparent 30%),
+                        var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 28px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(120deg, rgba(56, 189, 248, 0.16), rgba(245, 158, 11, 0.18));
+            color: var(--text);
+            padding: 34px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 2.4em;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.05em;
+            color: var(--muted);
+        }
+
+        .content {
+            padding: 26px;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .insight-card {
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+        }
+
+        .insight-card.emphasis {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.9));
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .insight-label {
+            font-size: 0.9em;
+            color: var(--muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .insight-value {
+            font-size: 2.1em;
+            font-weight: 700;
+        }
+
+        .insight-sub {
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+            align-items: center;
+            background: var(--panel-2);
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .controls select,
+        .controls input[type="text"] {
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95em;
+            min-width: 180px;
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text);
+            outline: none;
+        }
+
+        .controls select:focus,
+        .controls input[type="text"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+        }
+
+        .controls label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95em;
+            color: var(--text);
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 12px;
+        }
+
+        .controls .spacer {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+
+        .stat-item {
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            text-align: left;
+            box-shadow: 0 14px 38px rgba(0, 0, 0, 0.22);
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.92em;
+            margin-top: 6px;
+        }
+
+        .hosts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .host-item {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: var(--panel-2);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+        }
+
+        .host-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3);
+        }
+
+        .host-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s ease, border 0.3s ease;
+            background: rgba(148, 163, 184, 0.05);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .host-header:hover {
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .host-header.open {
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .host-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .host-ip {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--text);
+        }
+
+        .host-hostname {
+            font-size: 0.92em;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .host-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+        }
+
+        .host-status.up {
+            background: rgba(34, 197, 94, 0.18);
+            color: #86efac;
+        }
+
+        .host-status.down {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .toggle-arrow {
+            font-size: 1.4em;
+            color: var(--accent);
+            transition: transform 0.3s ease;
+            margin-left: 15px;
+        }
+
+        .toggle-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .host-details {
+            display: none;
+            padding: 18px;
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.9), rgba(15, 23, 42, 0.85));
+        }
+
+        .host-details.open {
+            display: block;
+        }
+
+        .ports-section {
+            margin-top: 6px;
+        }
+
+        .ports-title {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+            font-size: 1em;
+            letter-spacing: 0.2px;
+        }
+
+        .ports-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .port-item {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .port-item:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+        }
+
+        .port-header {
+            padding: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.25s ease;
+            background: rgba(148, 163, 184, 0.05);
+        }
+
+        .port-header:hover {
+            background: rgba(56, 189, 248, 0.07);
+        }
+
+        .port-header.open {
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .port-info {
+            display: flex;
+            gap: 18px;
+            flex: 1;
+            align-items: center;
+        }
+
+        .port-number {
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 60px;
+        }
+
+        .port-service {
+            color: var(--muted);
+            font-size: 0.95em;
+            flex: 1;
+        }
+
+        .port-state {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 700;
+        }
+
+        .port-state.open {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        .port-state.closed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .port-state.filtered {
+            background: rgba(245, 158, 11, 0.18);
+            color: #fcd34d;
+        }
+
+        .port-toggle {
+            font-size: 1.2em;
+            color: var(--accent);
+            transition: transform 0.25s ease;
+            margin-left: 10px;
+        }
+
+        .port-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .port-details {
+            display: none;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.15);
+            border-top: 1px solid var(--border);
+            font-size: 0.92em;
+        }
+
+        .port-details.open {
+            display: block;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 110px;
+        }
+
+        .detail-value {
+            color: var(--text);
+            margin-left: 18px;
+        }
+
+        .no-ports {
+            color: var(--muted);
+            font-style: italic;
+            padding: 10px 0;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .chart-card {
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+        }
+
+        .chart-title {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 260px !important;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .host-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .toggle-arrow {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .port-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Nmap Scan Results</h1>
+            <p>Interactive Network Discovery Report</p>
+        </div>
+
+        <div class="content">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-hosts">--</div>
+                    <div class="stat-label">Total Hosts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="up-hosts">--</div>
+                    <div class="stat-label">Hosts Up</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="open-ports">--</div>
+                    <div class="stat-label">Open Ports (all hosts)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="unique-ports">--</div>
+                    <div class="stat-label">Unique Open Ports</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="unique-services">--</div>
+                    <div class="stat-label">Services Seen</div>
+                </div>
+            </div>
+
+            <div class="insight-grid">
+                <div class="insight-card emphasis">
+                    <div class="insight-label">Top Open Port</div>
+                    <div class="insight-value" id="top-port">--</div>
+                    <div class="insight-sub" id="top-port-sub">Most frequent open port</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-label">Top Service</div>
+                    <div class="insight-value" id="top-service">--</div>
+                    <div class="insight-sub" id="top-service-sub">Most commonly exposed service</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-label">Chatty Host</div>
+                    <div class="insight-value" id="noisy-host">--</div>
+                    <div class="insight-sub" id="noisy-host-sub">Highest count of open ports</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-label">Script Findings</div>
+                    <div class="insight-value" id="script-count">--</div>
+                    <div class="insight-sub">NSE script outputs captured</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Open Port Frequency</div>
+                    <canvas id="port-frequency-chart" aria-label="Open port frequency chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Service Mix</div>
+                    <canvas id="service-mix-chart" aria-label="Service frequency chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Port States</div>
+                    <canvas id="state-donut-chart" aria-label="Port state distribution chart"></canvas>
+                </div>
+            </div>
+
+            <div class="controls">
+                <select id="sort-select" aria-label="Sort hosts">
+                    <option value="ip">Sort by IP</option>
+                    <option value="name">Sort by Name</option>
+                    <option value="status">Sort by Status</option>
+                </select>
+                <label>
+                    <input type="checkbox" id="hide-offline" />
+                    Hide offline hosts
+                </label>
+                <div class="spacer"></div>
+                <input type="text" id="search-input" placeholder="Search ports / versions" aria-label="Search ports or versions" />
+            </div>
+
+            <div class="hosts-list">
+                {% for host in hosts %}
+                <div class="host-item" data-ip="{{ host.ip }}" data-hostname="{{ host.hostname or '' }}" data-status="{{ host.status }}">
+                    <div class="host-header" onclick="toggleHost(this)">
+                        <div class="host-info">
+                            <div class="host-ip">{{ host.ip }}</div>
+                            {% if host.hostname %}
+                            <div class="host-hostname">{{ host.hostname }}</div>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span class="host-status {{ host.status }}">{{ host.status|upper }}</span>
+                            <span class="toggle-arrow">▼</span>
+                        </div>
+                    </div>
+
+                    <div class="host-details">
+                        <div class="ports-section">
+                            <div class="ports-title">Ports ({{ host.ports|selectattr('state', 'equalto', 'open')|list|length }} open)</div>
+                            {% if host.ports %}
+                            <div class="ports-list">
+                                {% for port in host.ports %}
+                                <div class="port-item" data-port-text="{{ (port.port ~ '/' ~ port.protocol ~ ' ' ~ (port.service or '') ~ ' ' ~ (port.product or '') ~ ' ' ~ (port.extrainfo or '') ~ ' ' ~ (port.state or '') ~ ' ' ~ (port.cpe|join(' ')))|e }}">
+                                    <div class="port-header" onclick="togglePort(event)">
+                                        <div class="port-info">
+                                            <div class="port-number">{{ port.port }}/{{ port.protocol }}</div>
+                                            <div class="port-service">
+                                                {% if port.service %}{{ port.service }}{% else %}unknown{% endif %}
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <span class="port-state {{ port.state }}">{{ port.state|upper }}</span>
+                                            <span class="port-toggle">▼</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="port-details">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Port:</span>
+                                            <span class="detail-value">{{ port.port }}/{{ port.protocol }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">State:</span>
+                                            <span class="detail-value">{{ port.state }}</span>
+                                        </div>
+                                        {% if port.reason %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">Reason:</span>
+                                            <span class="detail-value">{{ port.reason }}</span>
+                                        </div>
+                                        {% endif %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">Service:</span>
+                                            <span class="detail-value">{% if port.service %}{{ port.service }}{% else %}unknown{% endif %}</span>
+                                        </div>
+                                        {% if port.product %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">Product:</span>
+                                            <span class="detail-value">{{ port.product }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if port.extrainfo %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">Extra Info:</span>
+                                            <span class="detail-value">{{ port.extrainfo }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if port.ostype %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">OS Type:</span>
+                                            <span class="detail-value">{{ port.ostype }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if port.devicetype %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">Device Type:</span>
+                                            <span class="detail-value">{{ port.devicetype }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if port.cpe %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">CPE:</span>
+                                            <span class="detail-value">
+                                                {% for cpe in port.cpe %}
+                                                    <div style="margin: 5px 0;">{{ cpe }}</div>
+                                                {% endfor %}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                        {% if port.method %}
+                                        <div class="detail-row">
+                                            <span class="detail-label">Method:</span>
+                                            <span class="detail-value">{{ port.method }} (conf: {{ port.conf }})</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if port.scripts %}
+                                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                                            <div style="font-weight: 600; color: var(--accent); margin-bottom: 10px;">NSE Scripts:</div>
+                                            {% for script in port.scripts %}
+                                            <div style="margin-bottom: 15px; padding: 10px; background: rgba(148, 163, 184, 0.08); border-radius: 6px; border-left: 3px solid var(--accent);">
+                                                <div style="font-weight: 600; color: var(--text); margin-bottom: 8px;">{{ script.id }}</div>
+                                                <div style="font-size: 0.85em; color: var(--text); white-space: pre-wrap; word-wrap: break-word; max-height: 200px; overflow-y: auto; font-family: monospace;">{{ script.output }}</div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="no-ports">No open ports found</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const hostsData = {{ hosts|tojson|safe }};
+
+        function toggleHost(header) {
+            header.classList.toggle('open');
+            const arrow = header.querySelector('.toggle-arrow');
+            arrow.classList.toggle('open');
+            const details = header.nextElementSibling;
+            details.classList.toggle('open');
+        }
+
+        function togglePort(event) {
+            event.stopPropagation();
+            const portHeader = event.currentTarget;
+            portHeader.classList.toggle('open');
+            const toggle = portHeader.querySelector('.port-toggle');
+            toggle.classList.toggle('open');
+            const details = portHeader.nextElementSibling;
+            details.classList.toggle('open');
+        }
+
+        function summarize(hosts) {
+            const summary = {
+                totalHosts: hosts.length,
+                upHosts: 0,
+                openPorts: 0,
+                portFreq: {},
+                serviceFreq: {},
+                stateCounts: {},
+                uniquePorts: 0,
+                uniqueServices: 0,
+                scriptCount: 0,
+                noisyHost: { label: 'n/a', count: 0 },
+                topPort: null,
+                topService: null
+            };
+
+            hosts.forEach(host => {
+                if ((host.status || '').toLowerCase() === 'up') {
+                    summary.upHosts += 1;
+                }
+
+                let hostOpenCount = 0;
+
+                (host.ports || []).forEach(port => {
+                    const state = (port.state || 'unknown').toLowerCase();
+                    summary.stateCounts[state] = (summary.stateCounts[state] || 0) + 1;
+
+                    if (port.scripts && port.scripts.length) {
+                        summary.scriptCount += port.scripts.length;
+                    }
+
+                    if (state !== 'open') {
+                        return;
+                    }
+
+                    summary.openPorts += 1;
+                    hostOpenCount += 1;
+                    const portKey = `${port.port}/${port.protocol}`;
+                    summary.portFreq[portKey] = (summary.portFreq[portKey] || 0) + 1;
+
+                    const serviceName = (port.service || 'unknown').toLowerCase();
+                    summary.serviceFreq[serviceName] = (summary.serviceFreq[serviceName] || 0) + 1;
+                });
+
+                if (hostOpenCount > summary.noisyHost.count) {
+                    const label = host.hostname ? `${host.ip} (${host.hostname})` : host.ip;
+                    summary.noisyHost = { label, count: hostOpenCount };
+                }
+            });
+
+            summary.uniquePorts = Object.keys(summary.portFreq).length;
+            summary.uniqueServices = Object.keys(summary.serviceFreq).length;
+
+            const topPortEntry = Object.entries(summary.portFreq).sort((a, b) => b[1] - a[1])[0];
+            const topServiceEntry = Object.entries(summary.serviceFreq).sort((a, b) => b[1] - a[1])[0];
+
+            summary.topPort = topPortEntry ? { label: topPortEntry[0], count: topPortEntry[1] } : null;
+            summary.topService = topServiceEntry ? { label: topServiceEntry[0], count: topServiceEntry[1] } : null;
+
+            return summary;
+        }
+
+        function updateStatCards(summary) {
+            const setText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = value;
+                }
+            };
+
+            setText('total-hosts', summary.totalHosts);
+            setText('up-hosts', summary.upHosts);
+            setText('open-ports', summary.openPorts);
+            setText('unique-ports', summary.uniquePorts);
+            setText('unique-services', summary.uniqueServices);
+
+            const topPort = summary.topPort ? `${summary.topPort.label}` : 'n/a';
+            setText('top-port', topPort);
+            setText('top-port-sub', summary.topPort ? `${summary.topPort.count} hosts expose it` : 'No open ports detected');
+
+            const topService = summary.topService ? summary.topService.label : 'n/a';
+            setText('top-service', topService);
+            setText('top-service-sub', summary.topService ? `${summary.topService.count} occurrences` : 'No open services detected');
+
+            setText('noisy-host', summary.noisyHost.label);
+            setText('noisy-host-sub', summary.noisyHost.count ? `${summary.noisyHost.count} open ports` : 'No open ports');
+            setText('script-count', summary.scriptCount);
+        }
+
+        function buildChart(ctx, config) {
+            if (!ctx) return null;
+            if (!config.data.datasets[0].data.length) {
+                ctx.parentElement.innerHTML = '<div style="color: var(--muted); padding: 12px;">No data available</div>';
+                return null;
+            }
+            return new Chart(ctx, config);
+        }
+
+        function renderCharts(summary) {
+            const portEntries = Object.entries(summary.portFreq).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            const serviceEntries = Object.entries(summary.serviceFreq).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            const stateEntries = Object.entries(summary.stateCounts);
+
+            const accentPalette = ['#38bdf8', '#f59e0b', '#22c55e', '#a78bfa', '#f472b6', '#e11d48'];
+
+            buildChart(document.getElementById('port-frequency-chart'), {
+                type: 'bar',
+                data: {
+                    labels: portEntries.map(entry => entry[0]),
+                    datasets: [{
+                        label: 'Open occurrences',
+                        data: portEntries.map(entry => entry[1]),
+                        backgroundColor: accentPalette,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(148, 163, 184, 0.2)' }
+                        },
+                        y: {
+                            ticks: { color: '#cbd5e1', precision: 0 },
+                            grid: { color: 'rgba(148, 163, 184, 0.15)' }
+                        }
+                    }
+                }
+            });
+
+            buildChart(document.getElementById('service-mix-chart'), {
+                type: 'bar',
+                data: {
+                    labels: serviceEntries.map(entry => entry[0]),
+                    datasets: [{
+                        label: 'Occurrences',
+                        data: serviceEntries.map(entry => entry[1]),
+                        backgroundColor: accentPalette,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#cbd5e1', precision: 0 },
+                            grid: { color: 'rgba(148, 163, 184, 0.15)' }
+                        },
+                        y: {
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(148, 163, 184, 0.15)' }
+                        }
+                    }
+                }
+            });
+
+            buildChart(document.getElementById('state-donut-chart'), {
+                type: 'doughnut',
+                data: {
+                    labels: stateEntries.map(entry => entry[0]),
+                    datasets: [{
+                        data: stateEntries.map(entry => entry[1]),
+                        backgroundColor: accentPalette,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#cbd5e1' }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        const hostsList = document.querySelector('.hosts-list');
+        const hostItems = Array.from(hostsList.querySelectorAll('.host-item'));
+        const sortSelect = document.getElementById('sort-select');
+        const hideOfflineCheckbox = document.getElementById('hide-offline');
+        const searchInput = document.getElementById('search-input');
+
+        function ipToValue(ip) {
+            return ip.split('.').map(part => parseInt(part, 10) || 0);
+        }
+
+        function applySort() {
+            const mode = sortSelect.value;
+            const sorted = hostItems.slice().sort((a, b) => {
+                if (mode === 'ip') {
+                    const aIp = ipToValue(a.dataset.ip);
+                    const bIp = ipToValue(b.dataset.ip);
+                    for (let i = 0; i < 4; i++) {
+                        if (aIp[i] !== bIp[i]) return aIp[i] - bIp[i];
+                    }
+                    return 0;
+                }
+                if (mode === 'name') {
+                    return (a.dataset.hostname || '').localeCompare(b.dataset.hostname || '');
+                }
+                if (mode === 'status') {
+                    return (a.dataset.status || '').localeCompare(b.dataset.status || '');
+                }
+                return 0;
+            });
+
+            sorted.forEach(node => hostsList.appendChild(node));
+        }
+
+        function applyFilters() {
+            const hideOffline = hideOfflineCheckbox.checked;
+            const query = searchInput.value.trim().toLowerCase();
+
+            hostItems.forEach(host => {
+                const isOffline = host.dataset.status !== 'up';
+                if (hideOffline && isOffline) {
+                    host.style.display = 'none';
+                    return;
+                }
+
+                if (!query) {
+                    host.style.display = '';
+                    return;
+                }
+
+                const hostText = `${host.dataset.ip} ${host.dataset.hostname}`.toLowerCase();
+                if (hostText.includes(query)) {
+                    host.style.display = '';
+                    return;
+                }
+
+                const portItems = host.querySelectorAll('[data-port-text]');
+                let matches = false;
+                portItems.forEach(port => {
+                    if (port.dataset.portText.toLowerCase().includes(query)) {
+                        matches = true;
+                    }
+                });
+
+                host.style.display = matches ? '' : 'none';
+            });
+        }
+
+        sortSelect.addEventListener('change', () => {
+            applySort();
+            applyFilters();
+        });
+        hideOfflineCheckbox.addEventListener('change', applyFilters);
+        searchInput.addEventListener('input', applyFilters);
+
+        const summary = summarize(hostsData);
+        updateStatCards(summary);
+        renderCharts(summary);
+
+        applySort();
+        applyFilters();
+    </script>
+</body>
+</html>
